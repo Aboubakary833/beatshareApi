@@ -4,7 +4,9 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Music;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Owenoj\LaravelGetId3\GetId3;
 use Illuminate\Support\Str;
 
@@ -81,7 +83,9 @@ class HomeController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::where('uuid', $id)->first();
+        $usersMusics = $user->musics;
+        return response()->json($usersMusics);
     }
 
     /**
@@ -90,9 +94,11 @@ class HomeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function search($occurrence)
     {
-        //
+        $musics = Music::where('name', 'LIKE', '%' . $occurrence . '%')->get();
+        if(count($musics) === 0) return response('Aucune chanson correspondant à cette occurrence trouvé!');
+        return $musics;
     }
 
     /**
@@ -116,6 +122,10 @@ class HomeController extends Controller
     public function destroy($id)
     {
         $music = Music::where('uuid', $id)->first();
-        rm
+        if(Storage::delete($music->name)) {
+            Music::destroy($music->id);
+            return response()->json(['success', 'La musique a été supprimée avec succès!']);
+        }
+        else return response()->json(['error' => "Une erreur s'est produite! Veuillez réessayer."]);
     }
 }

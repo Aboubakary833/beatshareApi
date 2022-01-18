@@ -23,4 +23,6 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/', [HomeController::class, 'index']);
     Route::post('/add_music', [HomeController::class, 'store']);
     Route::get('/delete_music/{id}', [HomeController::class, 'destroy']);
+    Route::get('/fellow/{id}', [HomeController::class, 'show']);
+    Route::get('/search/{occurrence}', [HomeController::class, 'search']);
 });
